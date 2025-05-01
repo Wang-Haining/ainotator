@@ -44,10 +44,12 @@ Key features:
  - **Debug mode** (`--debug`): process only the first 10 unannotated rows,
  - **CoT mode** (`--cot`): include model reasoning for transparency,
  - **Seeded reproducibility**: fixed seed plus incremental offsets,
- - **Incremental audit**: writes raw prompts, responses, and cleaned annotations to CSV as it runs.
+ - **Incremental audit**: writes raw prompts, responses, and cleaned annotations to CSV
+    as it runs.
 
 Usage:
-    python run.py [--xlsx path/to/file.xlsx] [--model MODEL] [--max_tries N] [--debug] [--cot]
+    python run.py [--xlsx path/to/file.xlsx] [--model MODEL] [--max_tries N] [--debug]
+    [--cot]
 """
 
 __author__ = "The AInotator authors"
@@ -99,7 +101,8 @@ def _build_messages(
     global_context: str,
     user_meta: str,
 ) -> List[Dict]:
-    """Compose the list of chat messages for OpenAI, including global context and user metadata."""
+    """Compose the list of chat messages for OpenAI, including global context and user
+    metadata."""
     prev_msg, target_msg, next_msg = context
 
     # prepend user metadata (plain text lines)
@@ -142,7 +145,8 @@ def _parse_annotation(text: str) -> Dict:
 
     # 2) politeness label: normalize dashes, strip “none”, split off any subtype
     raw_pol = anno.get("politeness", "") or ""
-    raw_pol = raw_pol.replace("–", "-").replace("—", "-")  # normalize any dash
+    # normalize any dash
+    raw_pol = raw_pol.replace("–", "-").replace("—", "-")
     if raw_pol.strip().lower() == "none":
         pol = ""
         meta = anno.get("meta", "")
@@ -234,7 +238,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--xlsx",      default="data/Yusra_politeness.sch.copy.xlsx")
     parser.add_argument("--model",     default="gpt-4o-2024-08-06")
-    parser.add_argument("--max_tries", type=int, default=5)
+    parser.add_argument("--max_tries", type=int, default=20)
     parser.add_argument("--debug",     action="store_true")
     parser.add_argument("--cot",       action="store_true")
     args = parser.parse_args()
