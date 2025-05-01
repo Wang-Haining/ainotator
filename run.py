@@ -193,7 +193,8 @@ def main() -> None:
     logging.info("Starting annotation run")
 
     primary_seed = FIXED_SEEDS[0]
-    out_dir = Path("annotations") / f"seed_{primary_seed}"
+    cot_suffix = "_cot" if args.cot else ""
+    out_dir = Path("annotations") / f"seed_{primary_seed}{cot_suffix}"
     out_dir.mkdir(parents=True, exist_ok=True)
     logging.info(f"Output directory: {out_dir}")
 
