@@ -113,3 +113,10 @@ If reasoning is included, place it inside `[REASON]…[/REASON]` **before** the 
    • Use the least frequent label if unsure between two valid options.
 
 4. **Produce final annotation** – Output the structured label in the prescribed format, with no extra text after it.
+
+---
+⚠️ FORMAT REQUIREMENT ⚠️
+Return the annotation as one JSON object wrapped EXACTLY like:
+[ANNOT]{"act":"<ACT>","politeness":"<POL>","meta":"<META>"}[/ANNOT]
+Do NOT include any other text outside this block.
+
