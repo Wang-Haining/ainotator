@@ -123,7 +123,9 @@ def _annotate_row(
     targ_msg = df.iloc[row_idx]["Message"]
     next_msg = df.iloc[row_idx + 1]["Message"] if row_idx < len(df) - 1 else ""
 
-    for attempt, seed in enumerate(FIXED_SEEDS[:max_tries]):
+    base_seed = FIXED_SEEDS[0]  # fixme
+    for attempt in range(max_tries):
+        seed = base_seed + attempt
         messages = _build_messages(
             sys_prompt, (prev_msg, targ_msg, next_msg), include_cot, global_context
         )
