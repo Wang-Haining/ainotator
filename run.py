@@ -115,6 +115,7 @@ def _annotate_row(
     model: str,
     max_tries: int,
     include_cot: bool,
+    global_context: str,
 ) -> Tuple[Dict, List[Dict]]:
     """Annotate a single DataFrame row, retrying with FIXED_SEEDS."""
     raw_records: List[Dict] = []
@@ -124,7 +125,7 @@ def _annotate_row(
 
     for attempt, seed in enumerate(FIXED_SEEDS[:max_tries]):
         messages = _build_messages(
-            sys_prompt, (prev_msg, targ_msg, next_msg), include_cot
+            sys_prompt, (prev_msg, targ_msg, next_msg), include_cot, global_context
         )
         resp = openai.chat.completions.create(
             model=model,
