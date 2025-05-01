@@ -133,7 +133,7 @@ def _parse_annotation(text: str) -> Dict:
     if START_TAG not in text or END_TAG not in text:
         raise ValueError("wrapper tags not found")
 
-    # Pull out the JSON blob between [ANNOT]…[/ANNOT]
+    # pull out the JSON blob between [ANNOT]…[/ANNOT]
     json_str = text.split(START_TAG, 1)[1].split(END_TAG, 1)[0].strip()
     anno = json.loads(json_str)
 
@@ -176,7 +176,6 @@ def _parse_annotation(text: str) -> Dict:
     meta = ", ".join(clean_meta)
 
     return {"act": act, "politeness": pol, "meta": meta}
-
 
 
 def _annotate_row(
@@ -317,6 +316,13 @@ def main() -> None:
             logging.info(f"Annotated row {idx}")
         except RuntimeError as exc:
             logging.error(exc)
+            # mark failed row to preserve row alignment
+            df.loc[idx, ["act", "politeness", "meta"]] = ["__FAILED__", "", ""]
+            df.iloc[[idx]].to_csv(
+                out_dir / "annot_seq.csv",
+                mode="a", header=not (out_dir / "annot_seq.csv").exists(),
+                index=False
+            )
 
     logging.info("Annotation run complete")
 
