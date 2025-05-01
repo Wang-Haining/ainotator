@@ -16,6 +16,11 @@ Usage:
     python run.py
 """
 
+__author__ = "The AInotator authors"
+__version__ = "0.0.1"
+__license__ = "MIT"
+
+
 import argparse
 import json
 import time
