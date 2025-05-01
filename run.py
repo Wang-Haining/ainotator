@@ -237,7 +237,7 @@ def main() -> None:
             logging.error(exc)
         pbar.update(0)  # refresh description
 
-    pd.DataFrame(raw_rows).to_parquet(out_dir / "annot_raw.parquet", index=False)
+    pd.DataFrame(raw_rows).to_csv(out_dir / "annot_raw.csv", index=False)
     pd.DataFrame(clean_rows).to_csv(out_dir / "annot_clean.csv", index=False)
     df.to_csv(out_dir / "annot_seq.csv", index=False)
 
