@@ -44,10 +44,20 @@ REASON_START = "[REASON]"
 REASON_END = "[/REASON]"
 
 
+global_context = (
+    "A Reddit user (JuvieThrowaw) recounts being sentenced to juvenile detention as a "
+    "teenager after killing his mother's abusive boyfriend. The act was premeditated: "
+    "he waited at the boyfriend's house after the boyfriend had harmed his sister. "
+    "Years later, the user is unsure how much of this past to disclose to new close "
+    "friends and partners."
+)
+
+
 def _build_messages(
     system_prompt: str,
     context: Tuple[str, str, str],
     include_cot: bool,
+    global_context: str = "",  # NEW: optional global context
 ) -> List[Dict]:
     """Compose the list of chat messages for OpenAI."""
     prev_msg, target_msg, next_msg = context
@@ -68,8 +78,12 @@ def _build_messages(
         "\"politeness\":\"<POL>\",\"meta\":\"<META>\"}}{END_TAG}"
     )
 
+    system_block = (
+        (global_context.strip() + "\n\n" if global_context else "") + system_prompt
+    )
+
     return [
-        {"role": "system", "content": system_prompt},
+        {"role": "system", "content": system_block},
         {"role": "user", "content": user_block + reasoning_block + format_block},
     ]
 
@@ -204,7 +218,9 @@ def main() -> None:
                 args.model,
                 args.max_tries,
                 include_cot=args.cot,
+                global_context=global_context,
             )
+
             clean_rows.append(anno)
             raw_rows.extend(raws)
             df.loc[idx, ["act", "politeness", "meta"]] = (
