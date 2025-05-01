@@ -1,7 +1,8 @@
-# 🤖 AInotator: LLM-Based Annotation in CMC Research
+# 🤖 AInotator: Annotate Utterance with AI
 
 LLMs are rapidly catching up — but can they understand what is meant, not just what is said?
-**AInotator** puts this question to the test. It is a lightweight but powerful framework for **automated utterance-level annotation** in **computer-mediated communication (CMC)**, powered by OpenAI models.
+**AInotator** puts this question to the test. 
+It is a lightweight but powerful framework for **automated utterance-level annotation** in **computer-mediated communication (CMC)**, powered by OpenAI models.
 
 Given an Excel sheet of utterances with conversational context, the system applies a linguistically grounded schema to assign:
 
@@ -84,5 +85,19 @@ AInotator offers a practical, theory-aware solution — making it ideal for CMC 
  
 ## 🛠️ Contributions
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+## 📜 Version History
+
+- **v0.0.2**  
+  Enhanced prompt context with:
+  - Background summary of the original Reddit post  
+  - Inclusion of all thread-starting messages (Msg# == 1)  
+  - Local conversational context (previous, target, next messages)  
+  - Speaker metadata (User ID, gender, time, utterance ID)  
+  Improved format validation and annotation reproducibility.
+
+- **v0.0.1**  
+  Initial prototype with support for communicative act classification, politeness/impoliteness tags, and meta-acts. Included CoT reasoning toggle and resumable run logic.
+
 
 ---
