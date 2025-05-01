@@ -132,21 +132,51 @@ def _parse_annotation(text: str) -> Dict:
     """Extract and validate the JSON annotation from model output."""
     if START_TAG not in text or END_TAG not in text:
         raise ValueError("wrapper tags not found")
+
+    # Pull out the JSON blob between [ANNOT]…[/ANNOT]
     json_str = text.split(START_TAG, 1)[1].split(END_TAG, 1)[0].strip()
     anno = json.loads(json_str)
 
+    # 1) act label
     act = anno.get("act")
-    pol = anno.get("politeness", "")
-    meta = anno.get("meta", "")
 
+    # 2) politeness label: normalize dashes, strip “none”, split off any subtype
+    raw_pol = anno.get("politeness", "") or ""
+    raw_pol = raw_pol.replace("–", "-").replace("—", "-")  # normalize any dash
+    if raw_pol.strip().lower() == "none":
+        pol = ""
+        meta = anno.get("meta", "")
+    else:
+        # if there is a bracketed subtype like "-P [Insult]", split it
+        if "[" in raw_pol and "]" in raw_pol:
+            base, subtype = raw_pol.split("[", 1)
+            pol = base.strip()
+            extra = subtype.rstrip("]").strip()
+            # merge bracketed subtype into meta
+            existing = anno.get("meta", "").strip()
+            meta = extra if not existing else f"{existing}, {extra}"
+        else:
+            pol = raw_pol.strip()
+            meta = anno.get("meta", "")
+
+    # 3) validate act
     if act not in ALLOWED_ACTS:
         raise ValueError(f"invalid act: {act}")
-    if pol and not any(pol.startswith(p) for p in ALLOWED_POLITENESS):
+
+    # 4) validate politeness
+    if pol and pol not in ALLOWED_POLITENESS:
         raise ValueError(f"invalid politeness: {pol}")
-    if meta and meta not in ALLOWED_META:
-        raise ValueError(f"invalid meta: {meta}")
+
+    # 5) validate meta (allow multiple, comma-separated)
+    clean_meta = []
+    for tag in [t.strip() for t in meta.split(",") if t.strip()]:
+        if tag not in ALLOWED_META:
+            raise ValueError(f"invalid meta: {tag}")
+        clean_meta.append(tag)
+    meta = ", ".join(clean_meta)
 
     return {"act": act, "politeness": pol, "meta": meta}
+
 
 
 def _annotate_row(
@@ -176,19 +206,19 @@ def _annotate_row(
             user_meta,
         )
         resp = openai.chat.completions.create(
-            model= model,
-            messages= messages,
-            temperature= 0.7,
-            top_p= 0.95,
-            seed= seed,
+            model=model,
+            messages=messages,
+            temperature=0.7,
+            top_p=0.95,
+            seed=seed,
         )
         content = resp.choices[0].message.content
         raw_records.append({
-            "row_idx": row_idx,
-            "seed": seed,
-            "prompt": json.dumps(messages, ensure_ascii=False),
-            "response": content,
-            "timestamp": resp.created,
+            "row_idx":    row_idx,
+            "seed":       seed,
+            "prompt":     json.dumps(messages, ensure_ascii=False),
+            "response":   content,
+            "timestamp":  resp.created,
         })
         try:
             anno = _parse_annotation(content)
@@ -199,7 +229,6 @@ def _annotate_row(
             time.sleep(2 ** attempt)
 
     raise RuntimeError(f"row {row_idx}: parse failed after {max_tries} tries")
-
 
 
 def main() -> None:
@@ -220,15 +249,15 @@ def main() -> None:
     # build dynamic global context: a brief background + all Msg# == 1 posts
     first_posts = df.loc[df["Msg#"] == 1, "Message"].dropna().tolist()
     thread_summary = (
-                "Background: A Reddit user (“JuvieThrowaw”) shares that as a teenager they "
-                "fatally shot their mother's abusive boyfriend after he harmed their sister, "
-                "served juvenile time, and now struggles with whether to disclose this past "
-                "to new friends and partners."
-            )
+        "Background: A Reddit user (“JuvieThrowaw”) shares that as a teenager they "
+        "fatally shot their mother's abusive boyfriend after he harmed their sister, "
+        "served juvenile time, and now struggles with whether to disclose this past "
+        "to new friends and partners."
+    )
     dynamic_global_context = "\n\n".join([
-            thread_summary,
-            "Thread starter messages:\n" + "\n".join(f"- {m}" for m in first_posts)
-        ])
+        thread_summary,
+        "Thread starter messages:\n" + "\n".join(f"- {m}" for m in first_posts)
+    ])
 
     primary_seed = FIXED_SEEDS[0]
     cot_suffix = "_cot" if args.cot else ""
@@ -264,7 +293,10 @@ def main() -> None:
                 include_cot=args.cot, global_context=dynamic_global_context,
                 user_meta=user_meta,
             )
-            df.at[idx, ["act","politeness","meta"]] = anno["act"], anno["politeness"], anno["meta"]
+            # assign three columns in one go
+            df.loc[idx, ["act", "politeness", "meta"]] = [
+                anno["act"], anno["politeness"], anno["meta"]
+            ]
 
             pd.DataFrame([anno]).to_csv(
                 out_dir / "annot_clean.csv",
