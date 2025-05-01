@@ -96,7 +96,7 @@ def _parse_annotation(text: str) -> Dict:
     anno = json.loads(json_str)
 
     act = anno.get("act")
-    pol = anno.get("politeness")
+    pol = anno.get("politeness", "")
     meta = anno.get("meta", "")
 
     if act not in ALLOWED_ACTS:
@@ -105,7 +105,8 @@ def _parse_annotation(text: str) -> Dict:
         raise ValueError(f"invalid politeness: {pol}")
     if meta and meta not in ALLOWED_META:
         raise ValueError(f"invalid meta: {meta}")
-    return anno
+
+    return {"act": act, "politeness": pol, "meta": meta}
 
 
 def _annotate_row(
@@ -232,6 +233,11 @@ def main() -> None:
                 anno["politeness"],
                 anno["meta"],
             )
+            # write incremental output
+            pd.DataFrame([anno]).to_csv(out_dir / "annot_clean.csv", mode="a", header=not (out_dir / "annot_clean.csv").exists(), index=False)
+            pd.DataFrame(raws).to_csv(out_dir / "annot_raw.csv", mode="a", header=not (out_dir / "annot_raw.csv").exists(), index=False)
+            df.iloc[[idx]].to_csv(out_dir / "annot_seq.csv", mode="a", header=not (out_dir / "annot_seq.csv").exists(), index=False)
+
             logging.info(f"Annotated row {idx}")
         except RuntimeError as exc:
             logging.error(exc)
