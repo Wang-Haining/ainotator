@@ -136,50 +136,48 @@ def _parse_annotation(text: str) -> Dict:
     if START_TAG not in text or END_TAG not in text:
         raise ValueError("wrapper tags not found")
 
-    # pull out the JSON blob between [ANNOT]…[/ANNOT]
+    # JSON blob between the wrapper tags
     json_str = text.split(START_TAG, 1)[1].split(END_TAG, 1)[0].strip()
     anno = json.loads(json_str)
 
     # 1) communicative act
-    act = anno.get("act", "").strip()
+    act = str(anno.get("act", "")).strip()
     if act not in ALLOWED_ACTS:
         raise ValueError(f"invalid act: {act}")
 
-    # 2) politeness field — normalize dashes and extract subtype if present
-    raw_pol = anno.get("politeness", "") or ""
-    raw_pol = raw_pol.replace("–", "-").replace("—", "-").strip()
+    # 2) politeness (may include subtype)
+    raw_pol = str(anno.get("politeness", "") or "").replace("–", "-").replace("—", "-").strip()
+
+    # default meta string (safe even if key missing)
+    meta_field = str(anno.get("meta", "") or "").strip()
 
     if raw_pol.lower() == "none":
-        pol = ""
-        meta = anno.get("meta", "").strip()
+        pol, meta_from_pol = "", ""
     else:
-        # extract subtype if any (e.g., "-P [Insult]")
+        # extract subtype, e.g. "-P [Insult]"
         if "[" in raw_pol and "]" in raw_pol:
             base, subtype = raw_pol.split("[", 1)
             pol = base.strip()
-            extra = subtype.rstrip("]").strip()
-
-            # check if subtype is a valid meta or fold it in anyway
-            existing_meta = anno.get("meta", "").strip()
-            if existing_meta:
-                meta = f"{existing_meta}, {extra}"
-            else:
-                meta = extra
+            meta_from_pol = subtype.rstrip("]").strip()
         else:
             pol = raw_pol
-            meta = anno.get("meta", "").strip()
+            meta_from_pol = ""
 
-    # 3) validate politeness
+    # validate politeness
     if pol and pol not in ALLOWED_POLITENESS:
         raise ValueError(f"invalid politeness: {pol}")
 
-    # 4) validate meta (allow multiple comma-separated)
-    clean_meta = []
-    for tag in [t.strip() for t in meta.split(",") if t.strip()]:
+    # 3) meta tags
+    # merge any meta that came from politeness subtype
+    combined_meta = ", ".join(filter(None, [meta_field, meta_from_pol]))
+
+    clean_meta: List[str] = []
+    for tag in [t.strip() for t in combined_meta.split(",") if t.strip()]:
         if tag not in ALLOWED_META:
-            logging.warning(f"unrecognized meta tag: {tag}")  # warn but do not fail
+            logging.warning(f"unrecognized meta tag: {tag}")  # warn, but keep it
         else:
             clean_meta.append(tag)
+
     meta = ", ".join(clean_meta)
 
     return {"act": act, "politeness": pol, "meta": meta}
