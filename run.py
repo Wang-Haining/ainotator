@@ -16,11 +16,7 @@ when `--cot` is enabled, and finally requests a structured JSON annotation wrapp
 
 What does a prompt look like:
 ```SYSTEM:
-<<<<<<< HEAD
-<contents of system_prompt.md>
-=======
 <contents of system_prompt.txt>
->>>>>>> a4bf3e5e992cd7c094753f792163516e8a218fa2
 
 USER:
 Background: A Reddit user (“JuvieThrowaw”) shares that as a teenager they fatally shot
@@ -144,7 +140,6 @@ def _parse_annotation(text: str) -> Dict:
     json_str = text.split(START_TAG, 1)[1].split(END_TAG, 1)[0].strip()
     anno = json.loads(json_str)
 
-<<<<<<< HEAD
     # 1) communicative act
     act = anno.get("act", "").strip()
     if act not in ALLOWED_ACTS:
@@ -159,25 +154,10 @@ def _parse_annotation(text: str) -> Dict:
         meta = anno.get("meta", "").strip()
     else:
         # extract subtype if any (e.g., "-P [Insult]")
-=======
-    # 1) act label
-    act = anno.get("act")
-
-    # 2) politeness label: normalize dashes, strip “none”, split off any subtype
-    raw_pol = anno.get("politeness", "") or ""
-    # normalize any dash
-    raw_pol = raw_pol.replace("–", "-").replace("—", "-")
-    if raw_pol.strip().lower() == "none":
-        pol = ""
-        meta = anno.get("meta", "")
-    else:
-        # if there is a bracketed subtype like "-P [Insult]", split it
->>>>>>> a4bf3e5e992cd7c094753f792163516e8a218fa2
         if "[" in raw_pol and "]" in raw_pol:
             base, subtype = raw_pol.split("[", 1)
             pol = base.strip()
             extra = subtype.rstrip("]").strip()
-<<<<<<< HEAD
 
             # check if subtype is a valid meta or fold it in anyway
             existing_meta = anno.get("meta", "").strip()
@@ -200,29 +180,6 @@ def _parse_annotation(text: str) -> Dict:
             logging.warning(f"unrecognized meta tag: {tag}")  # warn but do not fail
         else:
             clean_meta.append(tag)
-=======
-            # merge bracketed subtype into meta
-            existing = anno.get("meta", "").strip()
-            meta = extra if not existing else f"{existing}, {extra}"
-        else:
-            pol = raw_pol.strip()
-            meta = anno.get("meta", "")
-
-    # 3) validate act
-    if act not in ALLOWED_ACTS:
-        raise ValueError(f"invalid act: {act}")
-
-    # 4) validate politeness
-    if pol and pol not in ALLOWED_POLITENESS:
-        raise ValueError(f"invalid politeness: {pol}")
-
-    # 5) validate meta (allow multiple, comma-separated)
-    clean_meta = []
-    for tag in [t.strip() for t in meta.split(",") if t.strip()]:
-        if tag not in ALLOWED_META:
-            raise ValueError(f"invalid meta: {tag}")
-        clean_meta.append(tag)
->>>>>>> a4bf3e5e992cd7c094753f792163516e8a218fa2
     meta = ", ".join(clean_meta)
 
     return {"act": act, "politeness": pol, "meta": meta}
@@ -325,11 +282,7 @@ def main() -> None:
         todo_idx = todo_idx[:10]
         logging.info("Debug mode: first 10 only")
 
-<<<<<<< HEAD
-    system_prompt = Path("system_prompt.md").read_text(encoding="utf-8")
-=======
     system_prompt = Path("system_prompt.txt").read_text(encoding="utf-8")
->>>>>>> a4bf3e5e992cd7c094753f792163516e8a218fa2
     pbar = tqdm(todo_idx, desc="Annotating", unit="row")
 
     for idx in pbar:
