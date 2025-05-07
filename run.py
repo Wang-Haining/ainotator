@@ -132,29 +132,34 @@ def _build_messages(
 
 
 def _parse_annotation(text: str) -> Dict:
-    """Extract and validate the JSON annotation from model output."""
+    """Extract reasoning (optional) and the JSON annotation; validate all fields."""
+
+    # -------- REASON block (optional) --------
+    reason = ""
+    if REASON_START in text and REASON_END in text:
+        reason = text.split(REASON_START, 1)[1].split(REASON_END, 1)[0].strip()
+
+    # -------- ANNOT block (required) ---------
     if START_TAG not in text or END_TAG not in text:
         raise ValueError("wrapper tags not found")
 
-    # JSON blob between the wrapper tags
     json_str = text.split(START_TAG, 1)[1].split(END_TAG, 1)[0].strip()
     anno = json.loads(json_str)
 
-    # 1) communicative act
+    # ---------- 1) communicative act ----------
     act = str(anno.get("act", "")).strip()
     if act not in ALLOWED_ACTS:
         raise ValueError(f"invalid act: {act}")
 
-    # 2) politeness (may include subtype)
-    raw_pol = str(anno.get("politeness", "") or "").replace("–", "-").replace("—", "-").strip()
+    # ---------- 2) politeness (+ optional subtype) ----------
+    raw_pol = str(anno.get("politeness", "") or "")
+    raw_pol = raw_pol.replace("–", "-").replace("—", "-").strip()
 
-    # default meta string (safe even if key missing)
-    meta_field = str(anno.get("meta", "") or "").strip()
+    meta_field = str(anno.get("meta", "") or "").strip()  # safe default ""
 
     if raw_pol.lower() == "none":
         pol, meta_from_pol = "", ""
     else:
-        # extract subtype, e.g. "-P [Insult]"
         if "[" in raw_pol and "]" in raw_pol:
             base, subtype = raw_pol.split("[", 1)
             pol = base.strip()
@@ -163,24 +168,21 @@ def _parse_annotation(text: str) -> Dict:
             pol = raw_pol
             meta_from_pol = ""
 
-    # validate politeness
     if pol and pol not in ALLOWED_POLITENESS:
         raise ValueError(f"invalid politeness: {pol}")
 
-    # 3) meta tags
-    # merge any meta that came from politeness subtype
+    # ---------- 3) meta tags ----------
     combined_meta = ", ".join(filter(None, [meta_field, meta_from_pol]))
-
     clean_meta: List[str] = []
     for tag in [t.strip() for t in combined_meta.split(",") if t.strip()]:
         if tag not in ALLOWED_META:
-            logging.warning(f"unrecognized meta tag: {tag}")  # warn, but keep it
+            logging.warning(f"unrecognized meta tag: {tag}")  # keep but warn
         else:
             clean_meta.append(tag)
-
     meta = ", ".join(clean_meta)
 
-    return {"act": act, "politeness": pol, "meta": meta}
+    return {"act": act, "politeness": pol, "meta": meta, "reason": reason}
+
 
 
 def _annotate_row(
@@ -304,7 +306,8 @@ def main() -> None:
 
             pd.DataFrame([anno]).to_csv(
                 out_dir / "annot_clean.csv",
-                mode="a", header=not (out_dir / "annot_clean.csv").exists(),
+                mode="a",
+                header=not (out_dir / "annot_clean.csv").exists(),
                 index=False
             )
             pd.DataFrame(raws).to_csv(
