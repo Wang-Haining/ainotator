@@ -16,7 +16,7 @@ when `--cot` is enabled, and finally requests a structured JSON annotation wrapp
 
 What does a prompt look like:
 ```SYSTEM:
-<contents of system_prompt.txt>
+<contents of system_prompt.md>
 
 USER:
 Background: A Reddit user (“JuvieThrowaw”) shares that as a teenager they fatally shot
@@ -282,7 +282,7 @@ def main() -> None:
         todo_idx = todo_idx[:10]
         logging.info("Debug mode: first 10 only")
 
-    system_prompt = Path("system_prompt.txt").read_text(encoding="utf-8")
+    system_prompt = Path("system_prompt.md").read_text(encoding="utf-8")
     pbar = tqdm(todo_idx, desc="Annotating", unit="row")
 
     for idx in pbar:
