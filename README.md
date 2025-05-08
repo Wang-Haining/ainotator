@@ -88,6 +88,9 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## 📜 Version History
 
+- **v0.0.3**  
+  Adopted Susan's new [instruction](https://homes.luddy.indiana.edu/herring/cmc.acts.html#:~:text=The%20CMC%20Act%20Taxonomy%20is,acts%20in%20computer%2Dmediated%20discourse)
+
 - **v0.0.2**  
   Enhanced prompt context with:
   - Background summary of the original Reddit post  
