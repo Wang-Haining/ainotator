@@ -367,20 +367,19 @@ def _format_local_context_narrative_yusra(row_idx: int, df: pd.DataFrame) -> str
 )
     # previous message context
     if row_idx > 0:
-        prev_row = df.iloc[row_idx - 1]
-        prev_text = str(prev_row["Message"]).strip()
-        prev_user = prev_row["User ID"]
+        prev_row = df[df["Msg#"] == msg_id - 1]
+        prev_text = " ".join(prev_row["Message"].astype(str).fillna("").map(str.strip))
+        prev_user = prev_row["User ID"].iloc[0]
         narrative += (
             f'\nThis follows the previous message from {prev_user}:\n"{prev_text}"'
         )
 
     # next message context
-    if row_idx < len(df) - 1:
-        next_row = df.iloc[row_idx + 1]
-        next_text = str(next_row["Message"]).strip()
-        next_user = next_row["User ID"]
-        narrative += f'\n\nIt is followed by a message from {next_user}:\n"{next_text}"'
-
+    if msg_id < df["Msg#"].max():
+        next_row = df[df["Msg#"] == msg_id + 1]
+        next_text = " ".join(next_row["Message"].astype(str).fillna("").map(str.strip))
+        next_user = next_row["User ID"].iloc[0]
+        narrative += f'\n\nIt is followed by a message from {next_user}:\n"{next_text}"\n'
     return narrative
 
 
@@ -431,7 +430,8 @@ def _build_messages(
     """Compose the list of chat messages for API calls, with background + system_prompt as system role,
     and thread-aware user prompt in narrative form."""
 
-    prev_msg, target_msg, next_msg = context
+    # Not used
+    # prev_msg, target_msg, next_msg = context
 
     # use the pre-formatted narrative from user_meta
     narrative_intro = user_meta
@@ -464,7 +464,7 @@ def _build_messages(
         "3. **For the two meta-act codes:** "
         "- **Check whether there is reported perspective in the utterance.** This is often found in an embedded clause. If there is reported content and it is the most important information in the utterance in the context in which it appears, code the meta-act as \"reported\" and focus on that part when assigning an act code later. Otherwise, do not assign \"reported\" and instead focus on the main proposition when assigning the speech act later. "
         "- **Check whether the utterance is bona fide or non-bona fide.** If non-bona fide, assign the meta-act code as \"Non-bona fide\" and code the utterance for speech act as if it were sincere. "
-        "4. 4. **Consider the 2-3 most plausible act options**, and then select the primary communicative function based on the part of the utterance identified in step 3. "
+        "4. **Consider the 2-3 most plausible act options**, and then select the primary communicative function based on the part of the utterance identified in step 3. "
         "5. **Code for politeness/impoliteness** only if clearly expressed or inferrable from the context (not neutral interactions). "
         "Think aloud step-by-step, and select the primary communicative function, politeness (if strong enough), and meta-acts (and subtype) when appropriate."
         )
@@ -662,7 +662,6 @@ def _annotate_row(
                 resp = client.chat.completions.create(
                     model=model,
                     messages=messages,
-                    # do_sample=False,
                     temperature=0.6,
                     top_p=0.9,
                     max_tokens=10240,

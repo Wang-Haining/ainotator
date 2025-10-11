@@ -136,7 +136,7 @@ Place `[REASON]...[/REASON]` **immediately before** the `[ANNOT]` block.
 ### Examples
 
 - Basic: `[ANNOT]{"act":"Accept","politeness":"","self/reported":"","non-bona fide":""}[/ANNOT]`  
-- With politeness: `[ANNOT]{"act":"Reject","politeness":"-P [Insult]","meta":"","non-bona fide":""}[/ANNOT]`  
+- With politeness: `[ANNOT]{"act":"Reject","politeness":"-P [Insult]","self/reported":"","non-bona fide":""}[/ANNOT]`  
 - With reported perspective: `[ANNOT]{"act":"Claim","politeness":"","self/reported":"reported","non-bona fide":""}[/ANNOT]`  
 - Sarcastic: `[ANNOT]{"act":"Congratulate","politeness":"-P","self/reported":"", "non-bona fide":"Ture"}[/ANNOT]`
 
