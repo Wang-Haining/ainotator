@@ -366,7 +366,7 @@ def _format_local_context_narrative_yusra(row_idx: int, df: pd.DataFrame) -> str
     f'You are asked only to annotate the utterance "{msg_text}".'
 )
     # previous message context
-    if row_idx > 0:
+    if msg_id > 1:
         prev_row = df[df["Msg#"] == msg_id - 1]
         prev_text = " ".join(prev_row["Message"].astype(str).fillna("").map(str.strip))
         prev_user = prev_row["User ID"].iloc[0]
@@ -958,7 +958,7 @@ def main() -> None:
     # determine rows to annotate
     todo_idx = [idx for idx in df.index if idx not in completed_rows]
     if args.debug:
-        todo_idx = todo_idx[0:20]
+        todo_idx = todo_idx[0:10]
         logging.info("Debug mode: first 10 only")
         debug_dir = os.path.join(args.output_dir, "debug")
         os.makedirs(debug_dir, exist_ok=True)
