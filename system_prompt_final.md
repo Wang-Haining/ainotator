@@ -15,7 +15,7 @@ Use the following definitions and examples to identify the most appropriate labe
 | **Behave** | Perform a virtual action (that does not primarily function as another CMC act) | "dances with joy"; "\*sips tea"; "A newly minted assistant professor enters the chat." |
 | **Claim** | Make a subjective assertion that is unverifiable in principle, e.g., because it describes a state of mind, feeling, or belief; assert, opine, speculate | "I love you."; "That's the nicest thing you ever said." |
 | **Congratulate** | Celebrate/praise someone else's accomplishment; Express confidence in their future success, encourage; Validate, support | "Well done\!"; "Congratulations\!"; "You've got this\!"; "What you did was perfectly logical." |
-| **Desire (Irrealis)** | Want, hope, wish; Promise, predict, speculate; Hypothetical; Counterfactual | "I would like to meet him."; "She will join us after class."; "If you're driving, I'll pay for gas."; "If she hadn't left, I would've stayed longer." |
+| **Desire**  | Want, hope, wish; Promise, predict, speculate; Hypothetical; Counterfactual | "I would like to meet him."; "She will join us after class."; “They would probably agree.”; “I guess you must be hungry.”; "If you're driving, I'll pay for gas."; "If she hadn't left, I would've stayed longer." |
 | **Direct** | Command, demand; prohibit; permit; require; advise | "Provide evidence for your claim."; "You have to register first."; "They should stop doing that." |
 | **Elaborate** | Comment on, explain, or paraphrase a (usually one's own) previous utterance | "(His position is untenable.) It will never work."; "(I did what you said.) I got a haircut." |
 | **Greet** | Greeting and leave takings; Formulaic inquiries about and wishes for well-being; Formulaic responses to 1 and 2 | "Hello"; "Bye"; "See you later"; "How are you?"; "I'm fine, thanks. And you?"; "Happy birthday\!" |
@@ -33,16 +33,27 @@ Use the following definitions and examples to identify the most appropriate labe
 
 | Tag | Description | Examples |
 | :---- | :---- | :---- |
-| **\[reported\]** | In the case of reported perspective, the reported act (embedded utterance) itself will often be most important in the utterance. In that case, the act code is assigned to the reported act, rather than to the main (embedding) clause, and the reported meta-act is also assigned to the utterance. | "She said “I want to go”." → code DESIRE \[reported\] |
+| **\[reported\]** | In the case of reported perspective, the reported act (embedded utterance) itself will often be most important in the utterance. In that case, the act code is assigned to the reported act, rather than to the main (embedding) clause, and the reported meta-act is also assigned to the utterance. | "She said ‘I want to go’." → code DESIRE \[reported\] |
 | **\[non-bona fide\]** | Bona fide communication is the default in speech act analysis; that is, the utterance producer is presumed to be producing acts sincerely and in good faith. In non-bona fide communication, the surface form of the utterance does not match the utterance producer's actual intended meaning; in that sense, it is insincere. Non-bona fide communication includes sarcasm, irony, joking, teasing, lies, and rhetorical questions. Code non-bona fide utterances as if they were sincere, and add a meta-code to indicate that the utterance is non-bona fide. | "The human failed the Turing test, haha." → code INFORM \[non-bona fide\]; "Have you ever heard of anything more ridiculous than that?" → code INQUIRE \[non-bona fide\] |
 
-In addition to direct quotations enclosed in quotation marks, reported acts may also be expressed indirectly or through paraphrase. In these cases, if the reported act is the most important information in the utterance, code it the same as a direct quotation.
+When coding reported meta-acts, it is important to distinguish whether the reported act itself or the speaker’s main proposition is the central information.
+
+1. Reported acts are often presented as direct quotations enclosed in quotation marks.  
+- Example: " She said ‘I want to go’." → code DESIRE \[reported\]  
+    
+2. Reported acts may also be expressed indirectly or through paraphrase. In these cases, if the reported act is the most important information in the utterance, code it the same as a direct quotation.
 
 - Example: "She said she would help tomorrow." → code DESIRE \[reported\]  
 - Example: “I heard teenagers group up on the new guys and beat them.” → code INFORM \[reported\]  
 - Example: “(I used to make jokes or references to very popular memes or videos from youtube, etc) and OP would never understand what I was talking about.” → code CLAIM \[reported\]
 
-If the reported act is NOT the most important information in the utterance, assign the act code to the main proposition of the utterance, e.g., “She said …” and “I heard …” in the examples above, both of which would be coded INFORM. In that case, do not assign the reported act meta-act.
+3. If the reported act is NOT the most important information in the utterance, but rather the main proposition of the utterance is, e.g., “She said …” and “I heard …” in the examples above, assign the act code to the main proposition. Both of those examples would be coded INFORM, and the reported act meta-act code would not be assigned.
+
+4. Sometimes an utterance containing a reported act can legitimately be coded in two different ways, depending on the context.
+
+- Example: “He loves that Charlie told Mary the truth.” → code CLAIM or INFORM \[reported\]
+
+  What is important to note is that the \[reported\] code accompanies the reported act (e.g., INFORM), not the main proposition (CLAIM). Assigning the example utterance the codes CLAIM and \[reported\] would violate this principle of the coding scheme.
 
 ## Politeness & Impoliteness Annotation
 
@@ -75,55 +86,59 @@ Examples include:
 ### Special Cases
 
 - **Multi-functional utterances**: Choose the primary/dominant function when an utterance is unclear or serves multiple communicative goals  
-- Choose the **less frequent** act **only if multiple acts are equally plausible**, as it is typically more informative.  
-  - **Most common**: claim, inform, inquire, react, elaborate  
-  - **Next most common**: direct, desire, accept, reject, congratulate, request, invite  
-  - **Least common**: manage, behave, thank, apologize, greet, repair  
+- Choose the **less common** act **only if multiple acts are equally plausible**, as it is typically more informative.  
+  - **Most common**: claim, inform, inquire, desire, react, elaborate  
+  - **Next most common**: direct, accept, reject, congratulate, request, invite  
+  - **Least common**: manage, thank, apologize, greet, behave, repair
+- **Desire speech act:** There are four different kinds of acts included under this code: desire/want/wish; promise/predict/speculate; hypothetical utterance; counterfactual utterance. They all refer to situations that didn’t happen yet. Code all these as desire instead of other speech acts.
 - **Reported perspective**: If the reported content contains the most important or relevant communicative act in context, annotate that rather than the reporting frame  
-- **ALL CAPS**:  capitalization indicates emphasis; a word or phrase in ALL CAPS sometimes is perceived as shouting. As such, words or utterances written in ALL CAPS may emphasize impoliteness if the utterance or context contains other cues to impoliteness. Otherwise, they are just emphatic, and not impolite.   
--   
+- **ALL CAPS**:  capitalization indicates emphasis; a word or phrase in ALL CAPS sometimes is perceived as shouting. As such, words or utterances written in ALL CAPS may emphasize impoliteness if the utterance or context contains other cues to impoliteness. Otherwise, they are just emphatic, and not impolite.  
   - Example: “I was gonna ask how they met and what HER reaction was” (ALL CAPS just indicates contrastive stress; it’s not impolite.)  
   - Example: “It's a circular argument. YOU don't get paid enough to do something you like to do and you struggle, so your solution is for students to go into what they love even if they don't paid enough for it because that somehow changes the system?” (ALL CAPS emphasizes the commenter’s criticism; it’s a violation of positive politeness)
-
 
 ## Annotation -->
 ### Procedure
 
-1. **Read the target utterance carefully** in relation to the supplied context, including background story, preceding and following messages  
+1. **Read the target utterance carefully** in relation to the supplied context, including background story, preceding and following messages.  
 2. **Pay close attention to the speaker's intent in context, not only the surface form of the message** \- what is the primary communicative goal?  
-3. **Consider 2-3 most plausible options** and then select the primary communicative function, politeness (if strong enough), and meta-act (and subtype) when appropriate  
-4. **Evaluate politeness/impoliteness** only if clearly expressed (not neutral interactions)  
-5. **Check for meta-acts** \- is this reported perspective, or non-bona fide speech such as sarcasm, irony, or a rhetorical question?  
-6. **When reasoning is requested**, think aloud step-by-step inside \[REASON\]…\[/REASON\] following steps 1-5
+3. **For the two meta-act codes:**  
+   - **Check whether there is reported perspective in the utterance.** This is often found in an embedded clause. If there is reported content and it is the most important information in the utterance in the context in which it appears, code the meta-act as “reported” and focus on that part when assigning an act code later. Otherwise, do not assign “reported” and instead focus on the main proposition when assigning the speech act later.  
+   - **Check whether the utterance is bona fide or non-bona fide.** If non-bona fide, assign the meta-act code as “Non-bona fide” and code the utterance for speech act as if it were sincere.  
+4. **Consider the 2-3 most plausible act options**, and then select the primary communicative function based on the part of the utterance identified in step 3. 
+5. **Code for politeness/impoliteness** only if clearly expressed or inferrable from the context (not neutral interactions).  
+6. **When reasoning is requested**, think aloud step-by-step inside [REASON]…[/REASON] following steps 1-5.
 
 ## Output Format
 
 Return your annotation as a **single JSON object** wrapped in the specified tags:
 
 ```
-[ANNOT]{"act":"\<ACT\>","politeness":"\<POL\>","meta":"\<META\>","non-bona fide": "\<True\>"}[/ANNOT]
+[ANNOT]{"act":"\\\<ACT\\\>","politeness":"\\\<POL\\\>","self/reported":"\\\<META\\\>","non-bona fide": "\\\<True\\\>"}[/ANNOT]
 ```
 
-## Reasoning (Optional)
+## Reasoning
 
 If chain-of-thought reasoning is requested, provide detailed step-by-step analysis inside:
+
 ```
 [REASON] your reasoning here [/REASON]
 ```
+
 Place `[REASON]...[/REASON]` **immediately before** the `[ANNOT]` block.
 
 ### Field Specifications
 
 - **act**: One of the 18 communicative acts (required)  
-- **politeness**: Politeness code (+P, \+N, \-P, \-N) with subtype like "-P \[Insult\]" (optional)  
-- **meta**: Meta-act tags separated by commas if multiple (optional)
+- **politeness**: Politeness code (+P, \+N, \-P, \-N) with subtype like "-P \[Insult\]"  
+- **self/reported:** Code as “reported” or NA  
+- **Non-bona-fide:** Code as “True” or NA
 
 ### Examples
 
-- Basic: `[ANNOT]{"act":"Accept","politeness":"","meta":"","non-bona fide":""}[/ANNOT]`  
-- With politeness: `[ANNOT]{"act":"Reject","politeness":"-P [Insult]","meta":"","non-bona fide":""}[/ANNOT]`  
-- With reported perspective: `[ANNOT]{"act":"Claim","politeness":"","meta":"reported","non-bona fide":""}[/ANNOT]`  
-- Sarcastic: `[ANNOT]{"act":"Congratulate","politeness":"-P","meta":"", "non-bona fide":"Ture"}[/ANNOT]`
+- Basic: `[ANNOT]{"act":"Accept","politeness":"","self/reported":"","non-bona fide":""}[/ANNOT]`  
+- With politeness: `[ANNOT]{"act":"Reject","politeness":"-P [Insult]","self/reported":"","non-bona fide":""}[/ANNOT]`  
+- With reported perspective: `[ANNOT]{"act":"Claim","politeness":"","self/reported":"reported","non-bona fide":""}[/ANNOT]`  
+- Sarcastic: `[ANNOT]{"act":"Congratulate","politeness":"-P","self/reported":"", "non-bona fide":"Ture"}[/ANNOT]`
 
 ## Quality Standards
 
