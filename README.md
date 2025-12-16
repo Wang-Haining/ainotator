@@ -1,4 +1,4 @@
-# 🤖 AInotator: Annotate Computer-Mediated Discourse with LLMs
+# 🤖 CMD-AInotator: Annotate Computer-Mediated Discourse with LLMs
 
 Can LLMs understand what is meant, not just what is said?
 **AInotator** puts this question to the test by automatically annotating computer-mediated discourse using state-of-the-art language models.
@@ -163,7 +163,7 @@ your_data_annotated_gpt_4o_2024_08_06.csv
 - **Dynamic context building** adapts to threaded vs. sequential conversations
 - **Missing metadata handling** works with incomplete user information
 - **Universal system prompt** works across different CMC datasets
-- **Corpus-specific backgrounds** for Yusra and Soyeon styles
+- **Corpus-specific backgrounds** for Game and Prison styles
 
 ### Data Integrity
 - **No file modification**: Original Excel files are never changed
