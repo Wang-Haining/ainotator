@@ -5,11 +5,11 @@ data using OpenAI, Anthropic Claude, Google Gemini, or local Llama models.
 
 1. Accepted workbook layouts
 
-- Yusra style
+- prison_sample style
     Msg# | Utterance # | Date | Time | User ID | Gender | Message
     (no Reply to_ID column)
 
-- Soyeon style
+- game_sample style
     Msg# | Date | Category | User ID | Reply to_ID | Message
     (may contain several "Original post" rows per thread)
 
@@ -25,7 +25,7 @@ Missing optional fields are filled with empty strings.
 - Background context: Dynamically built from conversation data
     - Detects threaded vs sequential conversation structure
     - Includes original posts that started the discussion (Msg# == 1 or Category == "Original post")
-    - Uses corpus-specific background narratives (BACKGROUND_YUSRA/BACKGROUND_SOYEON)
+    - Uses corpus-specific background narratives (BACKGROUND_prison_sample/BACKGROUND_game_sample)
 
 - Local context:
     - Reply-aware (threaded): Shows parent message and reply chain based on Reply to_ID
@@ -81,12 +81,12 @@ Creates a single comprehensive CSV file with:
 
 8. Usage examples
 Basic annotation:
-    python run.py --xlsx data/Soyeon.xlsx --model gpt-4o-2024-08-06
-    python run.py --xlsx data/Soyeon.xlsx --model claude-sonnet-4-20250514
-    python run.py --xlsx data/Soyeon.xlsx --model gemini-2.5-pro-preview-06-05
+    python run.py --xlsx data/game_sample.xlsx --model gpt-4o-2024-08-06
+    python run.py --xlsx data/game_sample.xlsx --model claude-sonnet-4-20250514
+    python run.py --xlsx data/game_sample.xlsx --model gemini-2.5-pro-preview-06-05
 
 Resume previous run:
-    python run.py --xlsx data/Yusra.xlsx --resume previous_output.csv
+    python run.py --xlsx data/prison_sample.xlsx --resume previous_output.csv
 
 Debug mode (first 10 rows):
     python run.py --xlsx data/input.xlsx --debug
@@ -143,7 +143,7 @@ REASON_START = "[REASON]"
 REASON_END = "[/REASON]"
 
 
-BACKGROUND_YUSRA = (
+BACKGROUND_prison_sample = (
     "**Background Context**: A Reddit user (JuvieThrowaw) shares that as a teenager "
     "they fatally shot their mother's abusive boyfriend after he harmed their sister, "
     "served juvenile time, and now is getting his life back on track. The user answers "
@@ -152,7 +152,7 @@ BACKGROUND_YUSRA = (
     "now."
 )
 
-BACKGROUND_SOYEON = (
+BACKGROUND_game_sample = (
     "**Background Context**: A Reddit user (CallSign_Fjor) posts in r/gaming that "
     "their friends lost interest in finishing Terraria and other games with them "
     "because the user had progressed farther, even though the user avoided using "
@@ -162,7 +162,7 @@ BACKGROUND_SOYEON = (
 
 
 def _load_xlsx(path: str) -> pd.DataFrame:
-    """Load either the Yusra sheet or the Soyeon sheet and return a
+    """Load either the prison_sample sheet or the game_sample sheet and return a
     canonical DataFrame with columns
 
         Msg# | Utterance # | Date | Time | User ID | Gender | Message | Reply to_ID
@@ -182,7 +182,7 @@ def _load_xlsx(path: str) -> pd.DataFrame:
         if col not in df.columns:
             df[col] = ""
 
-    # create Utterance # if absent (Yusra has it; Soyeon doesn't)
+    # create Utterance # if absent (prison_sample has it; game_sample doesn't)
     if "Utterance #" not in df.columns:
         df["Utterance #"] = (
             df.groupby("Msg#", sort=False).cumcount() + 1
@@ -215,9 +215,9 @@ def _load_xlsx(path: str) -> pd.DataFrame:
     return df
 
 
-def _format_local_context_narrative_soyeon(row_idx: int, df: pd.DataFrame) -> str:
+def _format_local_context_narrative_game_sample(row_idx: int, df: pd.DataFrame) -> str:
     """
-    Constructs a narrative-style local context for an utterance in the Soyeon corpus.
+    Constructs a narrative-style local context for an utterance in the game_sample corpus.
 
     Assumptions:
     - The dataframe includes a "Reply to_ID" column.
@@ -335,10 +335,10 @@ def _format_local_context_narrative_soyeon(row_idx: int, df: pd.DataFrame) -> st
     return narrative
 
 
-def _format_local_context_narrative_yusra(row_idx: int, df: pd.DataFrame) -> str:
+def _format_local_context_narrative_prison_sample(row_idx: int, df: pd.DataFrame) -> str:
     """
-    Constructs a narrative-style local context for an utterance in the Yusra corpus.
-    For Yusra style (sequential), we use simple prev/next context.
+    Constructs a narrative-style local context for an utterance in the prison_sample corpus.
+    For prison_sample style (sequential), we use simple prev/next context.
 
     Parameters:
         row_idx (int): The row index of the utterance to annotate.
@@ -388,9 +388,9 @@ def _format_local_context_narrative(row_idx: int, df: pd.DataFrame) -> str:
     Router function to choose the appropriate narrative formatting based on corpus type.
     """
     if "Category" in df.columns:
-        return _format_local_context_narrative_soyeon(row_idx, df)
+        return _format_local_context_narrative_game_sample(row_idx, df)
     else:
-        return _format_local_context_narrative_yusra(row_idx, df)
+        return _format_local_context_narrative_prison_sample(row_idx, df)
 
 
 def _get_local_context(idx: int, df: pd.DataFrame) -> Tuple[str, str]:
@@ -400,7 +400,7 @@ def _get_local_context(idx: int, df: pd.DataFrame) -> Tuple[str, str]:
     - If the sheet has a non-empty 'Reply to_ID' column we fetch only the
       *parent* message (prev_msg) and leave next_msg blank, because real-world
       reply trees rarely need a "next child" for local context.
-    - Otherwise fall back to simple previous / next rows (Yusra layout).
+    - Otherwise fall back to simple previous / next rows (prison_sample layout).
     """
     row = df.iloc[idx]
 
@@ -414,7 +414,7 @@ def _get_local_context(idx: int, df: pd.DataFrame) -> Tuple[str, str]:
                 prev_msg = earlier.loc[mask, "Message"].iloc[-1]
         return prev_msg, ""  # <-- next_msg intentionally blank
 
-    # sequential fallback (Yusra)
+    # sequential fallback (prison_sample)
     prev_msg = df.at[idx - 1, "Message"] if idx > 0 else ""
     next_msg = df.at[idx + 1, "Message"] if idx < len(df) - 1 else ""
     return prev_msg, next_msg
@@ -821,7 +821,7 @@ def main() -> None:
 
     # CLI
     parser = argparse.ArgumentParser()
-    parser.add_argument("--xlsx", default="data/Yusra.xlsx", help="Input Excel file")
+    parser.add_argument("--xlsx", default="data/prison_sample.xlsx", help="Input Excel file")
     parser.add_argument(
         "--output_dir",
         default="annotations",
@@ -919,8 +919,8 @@ def main() -> None:
         logging.info(f"Resumed {len(completed_rows)} previously completed rows")
 
     # build dynamic global context
-    if "Category" in df.columns:  # Soyeon layout
-        thread_summary = BACKGROUND_SOYEON
+    if "Category" in df.columns:  # game_sample layout
+        thread_summary = BACKGROUND_game_sample
         # Group original post utterances by Msg# to form complete messages
         original_post_df = df[df["Category"] == "Original post"]
         original_posts = []
@@ -928,8 +928,8 @@ def main() -> None:
             msg_utterances = original_post_df[original_post_df["Msg#"] == msg_id]["Message"].dropna()
             complete_message = " ".join(msg_utterances.astype(str))
             original_posts.append(complete_message)
-    else:  # Yusra layout
-        thread_summary = BACKGROUND_YUSRA
+    else:  # prison_sample layout
+        thread_summary = BACKGROUND_prison_sample
         # Group utterances by Msg# to form complete messages
         msg_1_df = df[df["Msg#"] == 1]
         original_posts = []
