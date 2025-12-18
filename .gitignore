@@ -7,12 +7,5 @@ __pycache__/
 *.csv
 *.xlsx
 
-/Users/raye/Desktop/ILS/cmda_llm/ainotator/chatbots_gpt4o_0707.ipynb
 chatbots_gpt4o_0707.ipynb
-
-results/
-data/
-annotations/
-.env
-__pycache__/
-chatbots_gpt4o_0707.ipynb
+compute_accuracy.ipynb
