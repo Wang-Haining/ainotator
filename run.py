@@ -949,7 +949,7 @@ def main() -> None:
     client, client_type = _get_model_client(args.model)
 
     # load system prompt
-    system_prompt_path = Path("system_prompt_final.md")
+    system_prompt_path = Path("system_prompt.md")
     if not system_prompt_path.exists():
         raise ValueError("System prompt not specified.")
     else:
