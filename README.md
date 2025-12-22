@@ -228,7 +228,7 @@ pip install transformers vllm
 <details>
 <summary>Click to expand version history</summary>
 
-- **v0.0.6**
+- **v0.6.0**
   - Clarified CMDA framing and separated acts/meta-acts vs politeness in README
   - Added attribution and CMDA reference
   - Added `LICENSE-PROMPT` (CC BY 4.0) for the system prompt; code remains MIT
