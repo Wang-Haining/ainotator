@@ -228,7 +228,14 @@ pip install transformers vllm
 <details>
 <summary>Click to expand version history</summary>
 
-* **v0.5.0** *(Current)*
+- **v0.0.6**
+  - Clarified CMDA framing and separated acts/meta-acts vs politeness in README
+  - Added attribution and CMDA reference
+  - Added `LICENSE-PROMPT` (CC BY 4.0) for the system prompt; code remains MIT
+  - No changes to the system prompt or annotation behavior
+
+
+* **v0.5.0**
 
   * **Updated script name**: changed from `annotate.py` to `run.py`
   * **Enhanced model support**: added o3-* models for OpenAI
